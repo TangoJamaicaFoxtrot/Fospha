@@ -43,6 +43,7 @@ summary["CAC"] = summary["Total_Cost"] / summary["Total_New_Conv"]
 # ---- KPI Row ----
 
 st.title("Marketing Performance Dashboard")
+
 with tab1:
     kpi1, kpi2, kpi3, kpi4 = st.columns(4)
     
@@ -51,6 +52,7 @@ with tab1:
     kpi3.metric("ROAS", f"{summary['Total_Revenue'].sum() / summary['Total_Cost'].sum():.2f}")
     kpi4.metric("CAC (£)", f"{summary['Total_Cost'].sum() / summary['Total_New_Conv'].sum():.2f}")
 
+with tab2:
 # ---- Time series chart ----
 fig = go.Figure()
 
