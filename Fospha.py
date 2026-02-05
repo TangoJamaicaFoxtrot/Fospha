@@ -54,31 +54,31 @@ with tab1:
 
 with tab2:
 # ---- Time series chart ----
-fig = go.Figure()
-
-fig.add_trace(
-    go.Scatter(
-        x=summary["Date_Year_Month"],
-        y=summary["Total_Cost"],
-        name="Cost",
-        yaxis="y1"
+    fig = go.Figure()
+    
+    fig.add_trace(
+        go.Scatter(
+            x=summary["Date_Year_Month"],
+            y=summary["Total_Cost"],
+            name="Cost",
+            yaxis="y1"
+        )
     )
-)
-
-fig.add_trace(
-    go.Scatter(
-        x=summary["Date_Year_Month"],
-        y=summary["Total_Revenue"],
-        name="Revenue",
-        yaxis="y2"
+    
+    fig.add_trace(
+        go.Scatter(
+            x=summary["Date_Year_Month"],
+            y=summary["Total_Revenue"],
+            name="Revenue",
+            yaxis="y2"
+        )
     )
-)
-
-fig.update_layout(
-    title="Cost vs Revenue Over Time",
-    yaxis=dict(title="Cost (£)"),
-    yaxis2=dict(title="Revenue (£)", overlaying="y", side="right"),
-    template="plotly_white"
-)
-
-st.plotly_chart(fig, use_container_width=True)
+    
+    fig.update_layout(
+        title="Cost vs Revenue Over Time",
+        yaxis=dict(title="Cost (£)"),
+        yaxis2=dict(title="Revenue (£)", overlaying="y", side="right"),
+        template="plotly_white"
+    )
+    
+    st.plotly_chart(fig, use_container_width=True)
