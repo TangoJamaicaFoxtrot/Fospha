@@ -123,19 +123,21 @@ with tab3:
 
     paid_social = df[df["Channel"] == "Paid Social"].copy()
 
-    # ---- Filters ----
+    # ---- Filters (defined ONCE) ----
     col1, col2 = st.columns(2)
 
     with col1:
         selected_month = st.selectbox(
             "Month",
-            sorted(paid_social["Date_Year_Month"].unique())
+            sorted(paid_social["Date_Year_Month"].unique()),
+            key="ps_month"
         )
 
     with col2:
         selected_market = st.selectbox(
             "Market",
-            sorted(paid_social["Market"].unique())
+            sorted(paid_social["Market"].unique()),
+            key="ps_market"
         )
 
     filtered = paid_social[
@@ -156,6 +158,7 @@ with tab3:
         .reset_index()
     )
 
+    # ---- Metrics ----
     source_perf["ROAS"] = source_perf.apply(
         lambda x: x["Revenue"] / x["Cost"] if x["Cost"] > 0 else None,
         axis=1
@@ -166,19 +169,13 @@ with tab3:
         axis=1
     )
 
-    # Drop zero-spend rows
+    # Remove zero-spend rows
     source_perf = source_perf[source_perf["Cost"] > 0]
 
     # ---- Charts ----
     c1, c2 = st.columns(2)
 
-
     with c1:
-        selected_month = st.selectbox(
-        "Month",
-        sorted(paid_social["Date_Year_Month"].unique()),
-        key="ps_month"
-    )
         fig_cac = px.bar(
             source_perf.sort_values("CAC"),
             x="Source",
@@ -189,11 +186,6 @@ with tab3:
         st.plotly_chart(fig_cac, use_container_width=True)
 
     with c2:
-        selected_market = st.selectbox(
-        "Market",
-        sorted(paid_social["Market"].unique()),
-        key="ps_market"
-    )
         fig_roas = px.bar(
             source_perf.sort_values("ROAS", ascending=False),
             x="Source",
@@ -220,7 +212,9 @@ with tab3:
     st.subheader("Source Performance Summary")
 
     st.dataframe(
-        source_perf.sort_values("ROAS", ascending=False).style.format({
+        source_perf
+        .sort_values("ROAS", ascending=False)
+        .style.format({
             "Cost": "£{:,.0f}",
             "Revenue": "£{:,.0f}",
             "ROAS": "{:.2f}",
@@ -228,4 +222,3 @@ with tab3:
         }),
         use_container_width=True
     )
-
