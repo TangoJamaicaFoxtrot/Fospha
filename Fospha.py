@@ -51,15 +51,14 @@ filtered = df[
 ]
 
 # ---- Aggregations ----
-num_cols = ["Cost", "Fospha Attribution Conversions", "Fospha Attribution Revenue", "Fospha Attribution New Conversions"]
-        for col in num_cols:
-        df[col] = pd.to_numeric(df[col], errors="coerce").round(2)
 summary = filtered.groupby("Date_Year_Month").agg(
     Total_Cost=("Cost", "sum"),
     Total_Revenue=("Fospha Attribution Revenue", "sum"),
     Total_New_Conv=("Fospha Attribution New Conversions", "sum")
 ).reset_index()
-
+num_cols = ["Cost", "Fospha Attribution Conversions", "Fospha Attribution Revenue", "Fospha Attribution New Conversions"]
+        for col in num_cols:
+        df[col] = pd.to_numeric(df[col], errors="coerce").round(2)
 summary["ROAS"] = summary["Total_Revenue"] / summary["Total_Cost"]
 summary["CAC"] = summary["Total_Cost"] / summary["Total_New_Conv"]
 
