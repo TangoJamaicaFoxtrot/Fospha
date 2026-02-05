@@ -28,34 +28,7 @@ df = load_data()
 num_cols = ["Cost", "Fospha Attribution Conversions", "Fospha Attribution Revenue", "Fospha Attribution New Conversions"]
 for col in num_cols:
     df[col] = pd.to_numeric(df[col], errors="coerce").round(2)
-    
-# ---- Sidebar filters ----
-st.sidebar.header("Filters")
 
-market = st.sidebar.selectbox(
-    "Market",
-    sorted(df["Market"].dropna().unique()),
-    index=0
-)
-
-channels = st.sidebar.multiselect(
-    "Channel",
-    sorted(df["Channel"].dropna().unique()),
-    default=df["Channel"].dropna().unique()
-)
-
-months = st.sidebar.multiselect(
-    "Month",
-    sorted(df["Date_Year_Month"].unique()),
-    default=sorted(df["Date_Year_Month"].unique())
-)
-
-# ---- Filtered dataframe ----
-filtered = df[
-    (df["Market"] == market) &
-    (df["Channel"].isin(channels)) &
-    (df["Date_Year_Month"].isin(months))
-]
 
 # ---- Aggregations ----
 summary = filtered.groupby("Date_Year_Month").agg(
@@ -68,14 +41,15 @@ summary["ROAS"] = summary["Total_Revenue"] / summary["Total_Cost"]
 summary["CAC"] = summary["Total_Cost"] / summary["Total_New_Conv"]
 
 # ---- KPI Row ----
+
 st.title("Marketing Performance Dashboard")
-
-kpi1, kpi2, kpi3, kpi4 = st.columns(4)
-
-kpi1.metric("Total Cost (£)", f"{summary['Total_Cost'].sum():,.0f}")
-kpi2.metric("Total Revenue (£)", f"{summary['Total_Revenue'].sum():,.0f}")
-kpi3.metric("ROAS", f"{summary['Total_Revenue'].sum() / summary['Total_Cost'].sum():.2f}")
-kpi4.metric("CAC (£)", f"{summary['Total_Cost'].sum() / summary['Total_New_Conv'].sum():.2f}")
+with tab1:
+    kpi1, kpi2, kpi3, kpi4 = st.columns(4)
+    
+    kpi1.metric("Total Cost (£)", f"{summary['Total_Cost'].sum():,.0f}")
+    kpi2.metric("Total Revenue (£)", f"{summary['Total_Revenue'].sum():,.0f}")
+    kpi3.metric("ROAS", f"{summary['Total_Revenue'].sum() / summary['Total_Cost'].sum():.2f}")
+    kpi4.metric("CAC (£)", f"{summary['Total_Cost'].sum() / summary['Total_New_Conv'].sum():.2f}")
 
 # ---- Time series chart ----
 fig = go.Figure()
