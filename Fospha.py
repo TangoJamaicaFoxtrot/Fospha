@@ -172,7 +172,13 @@ with tab3:
     # ---- Charts ----
     c1, c2 = st.columns(2)
 
+
     with c1:
+        selected_month = st.selectbox(
+        "Month",
+        sorted(paid_social["Date_Year_Month"].unique()),
+        key="ps_month"
+    )
         fig_cac = px.bar(
             source_perf.sort_values("CAC"),
             x="Source",
@@ -183,6 +189,11 @@ with tab3:
         st.plotly_chart(fig_cac, use_container_width=True)
 
     with c2:
+        selected_market = st.selectbox(
+        "Market",
+        sorted(paid_social["Market"].unique()),
+        key="ps_market"
+    )
         fig_roas = px.bar(
             source_perf.sort_values("ROAS", ascending=False),
             x="Source",
