@@ -31,7 +31,7 @@ for col in num_cols:
 
 
 # ---- Aggregations ----
-summary = filtered.groupby("Date_Year_Month").agg(
+summary = df.groupby("Date_Year_Month").agg(
     Total_Cost=("Cost", "sum"),
     Total_Revenue=("Fospha Attribution Revenue", "sum"),
     Total_New_Conv=("Fospha Attribution New Conversions", "sum")
