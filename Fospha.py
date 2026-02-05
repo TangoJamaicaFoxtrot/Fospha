@@ -9,15 +9,12 @@ st.set_page_config(page_title="Marketing Performance", layout="wide")
 @st.cache_data
 def load_data():
     df = pd.read_csv(
-        "Fospha Data 2.csv",
+        "Book2.csv",
         sep=";",
+        decimal=",",
         parse_dates=["Date"]
     )
     df["Date_Year_Month"] = df["Date"].dt.to_period("M").astype(str)
-
-
-df["Date"] = pd.to_datetime(df["Date"],errors="coerce")
-df["Date_Year_Month"] = df["Date"].dt.to_period("M")
     return df
 
 df = load_data()
