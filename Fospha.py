@@ -15,9 +15,6 @@ def load_data():
     )
     df["Date_Year_Month"] = df["Date"].dt.to_period("M").astype(str)
 
-    num_cols = ["Cost", "Fospha Attribution Conversions", "Fospha Attribution Revenue", "Fospha Attribution New Conversions"]
-        for col in num_cols:
-        df[col] = pd.to_numeric(df[col], errors="coerce").round(2)
 
 df["Date"] = pd.to_datetime(df["Date"],errors="coerce")
 df["Date_Year_Month"] = df["Date"].dt.to_period("M")
@@ -54,6 +51,9 @@ filtered = df[
 ]
 
 # ---- Aggregations ----
+num_cols = ["Cost", "Fospha Attribution Conversions", "Fospha Attribution Revenue", "Fospha Attribution New Conversions"]
+        for col in num_cols:
+        df[col] = pd.to_numeric(df[col], errors="coerce").round(2)
 summary = filtered.groupby("Date_Year_Month").agg(
     Total_Cost=("Cost", "sum"),
     Total_Revenue=("Fospha Attribution Revenue", "sum"),
