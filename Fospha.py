@@ -51,34 +51,69 @@ with tab1:
     kpi4.metric("CAC (£)", f"{summary['Total_Cost'].sum() / summary['Total_New_Conv'].sum():.2f}")
 
 with tab2:
-# ---- Time series chart ----
-    selected_market = st.selectbox("Market", df["Market"].unique())
+    st.subheader("Cost vs Revenue Over Time")
+
+    selected_market = st.selectbox(
+        "Market",
+        sorted(df["Market"].dropna().unique()),
+        index=0
+    )
+
+    filtered = df[df["Market"] == selected_market]
+
+    summary = (
+        filtered
+        .groupby("Date_Year_Month")
+        .agg(
+            Total_Cost=("Cost", "sum"),
+            Total_Revenue=("Fospha Attribution Revenue", "sum"),
+            Total_New_Conv=("Fospha Attribution New Conversions", "sum")
+        )
+        .reset_index()
+    )
+
+    summary["Date_Year_Month"] = pd.to_datetime(summary["Date_Year_Month"])
+    summary = summary.sort_values("Date_Year_Month")
+
+    summary["ROAS"] = summary.apply(
+        lambda x: x["Total_Revenue"] / x["Total_Cost"]
+        if x["Total_Cost"] > 0 else None,
+        axis=1
+    )
 
     fig = go.Figure()
-    
+
     fig.add_trace(
         go.Scatter(
             x=summary["Date_Year_Month"],
             y=summary["Total_Cost"],
             name="Cost",
+            mode="lines+markers",
             yaxis="y1"
         )
     )
-    
+
     fig.add_trace(
         go.Scatter(
             x=summary["Date_Year_Month"],
             y=summary["Total_Revenue"],
             name="Revenue",
+            mode="lines+markers",
             yaxis="y2"
         )
     )
-    
+
     fig.update_layout(
-        title="Cost vs Revenue Over Time",
+        title=f"Cost vs Revenue Over Time – {selected_market}",
+        xaxis_title="Month",
         yaxis=dict(title="Cost (£)"),
-        yaxis2=dict(title="Revenue (£)", overlaying="y", side="right"),
-        template="plotly_white"
+        yaxis2=dict(
+            title="Revenue (£)",
+            overlaying="y",
+            side="right"
+        ),
+        template="plotly_white",
+        legend=dict(orientation="h", y=-0.25)
     )
-    
+
     st.plotly_chart(fig, use_container_width=True)
