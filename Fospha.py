@@ -117,3 +117,104 @@ with tab2:
     )
 
     st.plotly_chart(fig, use_container_width=True)
+
+with tab3:
+    st.subheader("Paid Social Deep Dive")
+
+    paid_social = df[df["Channel"] == "Paid Social"].copy()
+
+    # ---- Filters ----
+    col1, col2 = st.columns(2)
+
+    with col1:
+        selected_month = st.selectbox(
+            "Month",
+            sorted(paid_social["Date_Year_Month"].unique())
+        )
+
+    with col2:
+        selected_market = st.selectbox(
+            "Market",
+            sorted(paid_social["Market"].unique())
+        )
+
+    filtered = paid_social[
+        (paid_social["Date_Year_Month"] == selected_month) &
+        (paid_social["Market"] == selected_market)
+    ]
+
+    # ---- Aggregation ----
+    source_perf = (
+        filtered
+        .groupby("Source")
+        .agg(
+            Cost=("Cost", "sum"),
+            Revenue=("Fospha Attribution Revenue", "sum"),
+            Conversions=("Fospha Attribution Conversions", "sum"),
+            New_Conversions=("Fospha Attribution New Conversions", "sum")
+        )
+        .reset_index()
+    )
+
+    source_perf["ROAS"] = source_perf.apply(
+        lambda x: x["Revenue"] / x["Cost"] if x["Cost"] > 0 else None,
+        axis=1
+    )
+
+    source_perf["CAC"] = source_perf.apply(
+        lambda x: x["Cost"] / x["New_Conversions"] if x["New_Conversions"] > 0 else None,
+        axis=1
+    )
+
+    # Drop zero-spend rows
+    source_perf = source_perf[source_perf["Cost"] > 0]
+
+    # ---- Charts ----
+    c1, c2 = st.columns(2)
+
+    with c1:
+        fig_cac = px.bar(
+            source_perf.sort_values("CAC"),
+            x="Source",
+            y="CAC",
+            title="CAC by Paid Social Source",
+            template="plotly_white"
+        )
+        st.plotly_chart(fig_cac, use_container_width=True)
+
+    with c2:
+        fig_roas = px.bar(
+            source_perf.sort_values("ROAS", ascending=False),
+            x="Source",
+            y="ROAS",
+            title="ROAS by Paid Social Source",
+            template="plotly_white"
+        )
+        st.plotly_chart(fig_roas, use_container_width=True)
+
+    # ---- Cost vs New Conversions ----
+    fig_scatter = px.scatter(
+        source_perf,
+        x="Cost",
+        y="New_Conversions",
+        size="Revenue",
+        color="Source",
+        title="Cost vs New Conversions (Bubble = Revenue)",
+        template="plotly_white"
+    )
+
+    st.plotly_chart(fig_scatter, use_container_width=True)
+
+    # ---- Table ----
+    st.subheader("Source Performance Summary")
+
+    st.dataframe(
+        source_perf.sort_values("ROAS", ascending=False).style.format({
+            "Cost": "£{:,.0f}",
+            "Revenue": "£{:,.0f}",
+            "ROAS": "{:.2f}",
+            "CAC": "£{:,.2f}"
+        }),
+        use_container_width=True
+    )
+
