@@ -14,6 +14,13 @@ def load_data():
         parse_dates=["Date"]
     )
     df["Date_Year_Month"] = df["Date"].dt.to_period("M").astype(str)
+
+num_cols = ["Cost", "Fospha Attribution Conversions", "Fospha Attribution Revenue", "Fospha Attribution New Conversions"]
+    for col in num_cols:
+    df[col] = pd.to_numeric(df[col], errors="coerce").round(2)
+
+df["Date"] = pd.to_datetime(df["Date"],errors="coerce")
+df["Date_Year_Month"] = df["Date"].dt.to_period("M")
     return df
 
 df = load_data()
