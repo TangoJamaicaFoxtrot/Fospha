@@ -52,6 +52,8 @@ with tab1:
 
 with tab2:
 # ---- Time series chart ----
+    selected_market = st.selectbox("Market", df["Market"].unique())
+
     fig = go.Figure()
     
     fig.add_trace(
