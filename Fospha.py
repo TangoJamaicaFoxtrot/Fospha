@@ -18,7 +18,7 @@ def load_data():
 
 df["Date"] = pd.to_datetime(df["Date"],errors="coerce")
 df["Date_Year_Month"] = df["Date"].dt.to_period("M")
-    return df
+return df
 
 df = load_data()
 
