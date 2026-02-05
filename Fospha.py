@@ -5,6 +5,13 @@ import plotly.express as px
 
 st.set_page_config(page_title="Marketing Performance", layout="wide")
 
+tab1, tab2, tab3, tab4 = st.tabs([
+    "Overview",
+    "Channel Performance",
+    "Paid Social Deep Dive",
+    "Trends & Efficiency"
+])
+
 # ---- Load data ----
 @st.cache_data
 def load_data():
