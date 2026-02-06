@@ -436,21 +436,45 @@ with tab5:
         use_container_width=True
     )
 
+        # --------------------
+    # 5️⃣ Paid Cost vs Revenue Over Time (dual-axis) with channel filter
     # --------------------
-    # 5️⃣ Paid Cost vs Revenue Over Time (dual-axis)
-    # --------------------
+    available_channels = sorted(df_paid["Channel"].unique())
+    selected_channels = st.multiselect(
+        "Select Channel(s) for Time Series",
+        options=available_channels,
+        default=available_channels  # show all by default
+    )
+
+    df_time_filtered = df_paid[df_paid["Channel"].isin(selected_channels)]
+
     time_pivot = (
-        df_paid.groupby("Month")
-        .agg(Cost=("Cost", "sum"), Revenue=("Fospha Attribution Revenue", "sum"))
+        df_time_filtered.groupby("Month")
+        .agg(
+            Cost=("Cost", "sum"),
+            Revenue=("Fospha Attribution Revenue", "sum")
+        )
         .reset_index()
     )
 
     fig_time = go.Figure()
     fig_time.add_trace(
-        go.Scatter(x=time_pivot["Month"], y=time_pivot["Cost"], mode="lines+markers", name="Cost", yaxis="y1")
+        go.Scatter(
+            x=time_pivot["Month"],
+            y=time_pivot["Cost"],
+            mode="lines+markers",
+            name="Cost",
+            yaxis="y1"
+        )
     )
     fig_time.add_trace(
-        go.Scatter(x=time_pivot["Month"], y=time_pivot["Revenue"], mode="lines+markers", name="Revenue", yaxis="y2")
+        go.Scatter(
+            x=time_pivot["Month"],
+            y=time_pivot["Revenue"],
+            mode="lines+markers",
+            name="Revenue",
+            yaxis="y2"
+        )
     )
     fig_time.update_layout(
         title="Paid Channel Cost vs Revenue Over Time",
@@ -461,4 +485,3 @@ with tab5:
         template="plotly_white"
     )
     st.plotly_chart(fig_time, use_container_width=True)
-
