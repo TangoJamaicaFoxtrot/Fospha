@@ -76,6 +76,8 @@ with tab1:
                                    if (x["New_Conversions"]+x["Returning_Conversions"])>0 else None, axis=1)
     summary["AOV"] = summary.apply(lambda x: x["Total_Revenue"] / (x["New_Conversions"] + x["Returning_Conversions"]) 
                                     if (x["New_Conversions"] + x["Returning_Conversions"]) > 0 else None, axis=1)
+    summary["Returning_Conversions"] = summary.apply(lambda x: x["Returning_Conversions"] 
+                                                     if pd.notna(x["Returning_Conversions"]) else 0, axis=1)
 
 
     # KPI Row
