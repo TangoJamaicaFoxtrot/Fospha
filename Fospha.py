@@ -115,18 +115,24 @@ with tab1:
 
 
     Clear action: 
+    
     Reallocate spend from Paid Shopping into Performance Max and Paid Search while continuing to optimise Paid Social
-    Continue investing in Email, Organic, Affiliates and Referral to maximise incremental revenue.
+    
     
     Budget & optimisation recommendations:
-    Increase investment in high-ROAS channels
+    
+    Increase investment in high-ROAS channels.
+    
     Scale Performance Max where possible.
+    
     Maintain and selectively grow Paid Search (Generic).
     
     Optimise mid-tier channels:
+    
     Paid Social requires creative, audience or bidding optimisation to improve efficiency.
     
     Reduce or reallocate low-ROAS spend:
+    
     Paid Shopping should be reviewed, optimised, or partially reallocated.
         """)
 
