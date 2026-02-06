@@ -28,12 +28,13 @@ for col in num_cols:
 # ------------------
 # Tabs
 # ------------------
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
-    "Task 4: ROAS by Channel",
-    "Task 5: Paid Social ROAS Over Time",
-    "Task 6: Paid Social – October Source Performance",
-    "Task 7: UK Cost & Revenue Over Time",
-    "Bonus Task: Paid Social Deep Dive"
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+    "Task 4",
+    "Task 5",
+    "Task 6",
+    "Task 7",
+    "Bonus Task 1",
+    "Bonus Task 2"
     
 ])
 
@@ -151,6 +152,8 @@ with tab2:
 # ------------------
 # TAB 3: Paid Social – CAC & Cost by Source (October)
 # ------------------
+import plotly.graph_objects as go
+
 with tab3:
     st.header("Paid Social – CAC & Cost by Source (October)")
 
@@ -168,16 +171,60 @@ with tab3:
 
     source_pivot["CAC"] = source_pivot["Cost"] / source_pivot["New_Conversions"]
 
+    # ---- Explicit ordering (Pinterest last) ----
+    source_order = [
+        s for s in source_pivot["Source"].unique()
+        if s.lower() != "pinterest"
+    ] + ["Pinterest"]
+
+    source_pivot["Source"] = pd.Categorical(
+        source_pivot["Source"],
+        categories=source_order,
+        ordered=True
+    )
+
+    source_pivot = source_pivot.sort_values("Source")
+
     st.dataframe(source_pivot)
 
-    fig_source = px.bar(
-        source_pivot,
-        x="Source",
-        y=["Cost", "CAC"],
-        barmode="group",
-        title="Paid Social Cost & CAC by Source (October)"
+    # ---- Chart ----
+    fig = go.Figure()
+
+    # Cost (bars, left axis)
+    fig.add_trace(
+        go.Bar(
+            x=source_pivot["Source"],
+            y=source_pivot["Cost"],
+            name="Cost",
+            yaxis="y1"
+        )
     )
-    st.plotly_chart(fig_source, use_container_width=True)
+
+    # CAC (line, right axis)
+    fig.add_trace(
+        go.Scatter(
+            x=source_pivot["Source"],
+            y=source_pivot["CAC"],
+            name="CAC",
+            yaxis="y2",
+            mode="lines+markers"
+        )
+    )
+
+    fig.update_layout(
+        title="Paid Social Cost & CAC by Source (October)",
+        xaxis_title="Source",
+        yaxis=dict(title="Cost"),
+        yaxis2=dict(
+            title="CAC",
+            overlaying="y",
+            side="right"
+        ),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
 
 # ------------------
 # TAB 4: UK – Cost & Revenue over time
