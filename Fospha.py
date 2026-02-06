@@ -120,7 +120,7 @@ with tab1:
     st.subheader("Insights / Commentary")
     st.markdown("""
     **Best Efficiency:**  
-    Performance Max → Paid Search → Paid Social → Paid Shopping
+    - Performance Max → Paid Search → Paid Social → Paid Shopping
     
     **Clear Action:**  
     - Reallocate spend from Paid Shopping into Performance Max and Paid Search  
