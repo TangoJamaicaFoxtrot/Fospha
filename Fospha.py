@@ -12,18 +12,22 @@ def load_data():
     df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
     df["Date_Year_Month"] = df["Date"].dt.to_period("M").astype(str)
     
-    # Convert numeric columns
+    # Define numeric columns that might exist
     num_cols = [
-        "Cost", "Fospha Attribution Conversions", 
-        "Fospha Attribution Revenue", "Fospha Attribution New Conversions",
-        "Returning Conversions", "Average Order Value"
+        "Cost", 
+        "Fospha Attribution Conversions", 
+        "Fospha Attribution Revenue", 
+        "Fospha Attribution New Conversions",
+        "Returning Conversions",       # optional
+        "Average Order Value"          # optional
     ]
+    
     for col in num_cols:
-        if col in df.columns:
-            df[col] = pd.to_numeric(df[col], errors="coerce").round(2)
+        if col not in df.columns:
+            df[col] = pd.NA  # fill missing optional columns
+        df[col] = pd.to_numeric(df[col], errors="coerce").round(2)
+    
     return df
-
-df = load_data()
 
 # ---- Tabs ----
 tab1, tab2, tab3, tab4 = st.tabs([
