@@ -687,6 +687,30 @@ with tab6:
     )
     st.plotly_chart(fig_cac, use_container_width=True)
 
+    # --------------------
+    # 3️⃣ ROAS & Metrics Table
+    # --------------------
+    source_pivot["CPP"] = source_pivot["Cost"] / source_pivot["Total_Conversions"]
+    source_pivot["AOV"] = source_pivot["Revenue"] / source_pivot["Total_Conversions"]
+    source_pivot["Returning_Conversions"] = source_pivot["Total_Conversions"] - source_pivot["New_Conversions"]
+    source_pivot["ROAS"] = source_pivot["Revenue"] / source_pivot["Cost"]
+
+    st.subheader("Source Metrics Table")
+    st.dataframe(
+        source_pivot[[
+            "Source", "Cost", "Revenue", "ROAS", "CAC", "CPP", "AOV",
+            "New_Conversions", "Returning_Conversions"
+        ]].style.format({
+            "Cost": "£{:,.0f}",
+            "Revenue": "£{:,.0f}",
+            "ROAS": "{:.2f}",
+            "CAC": "£{:,.2f}",
+            "CPP": "£{:,.2f}",
+            "AOV": "£{:,.2f}"
+        }),
+        use_container_width=True
+    )
+
     
     # --------------------
     # 4️⃣ New vs Returning Conversions by Source (stacked bar)
@@ -745,28 +769,4 @@ with tab6:
         template="plotly_white"
     )
     st.plotly_chart(fig_time, use_container_width=True)
-
-    # --------------------
-    # 3️⃣ ROAS & Metrics Table
-    # --------------------
-    source_pivot["CPP"] = source_pivot["Cost"] / source_pivot["Total_Conversions"]
-    source_pivot["AOV"] = source_pivot["Revenue"] / source_pivot["Total_Conversions"]
-    source_pivot["Returning_Conversions"] = source_pivot["Total_Conversions"] - source_pivot["New_Conversions"]
-    source_pivot["ROAS"] = source_pivot["Revenue"] / source_pivot["Cost"]
-
-    st.subheader("Source Metrics Table")
-    st.dataframe(
-        source_pivot[[
-            "Source", "Cost", "Revenue", "ROAS", "CAC", "CPP", "AOV",
-            "New_Conversions", "Returning_Conversions"
-        ]].style.format({
-            "Cost": "£{:,.0f}",
-            "Revenue": "£{:,.0f}",
-            "ROAS": "{:.2f}",
-            "CAC": "£{:,.2f}",
-            "CPP": "£{:,.2f}",
-            "AOV": "£{:,.2f}"
-        }),
-        use_container_width=True
-    )
 
