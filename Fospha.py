@@ -111,24 +111,24 @@ with tab1:
     st.markdown("---")
     st.subheader("Insights / Commentary")
     st.markdown("""
-    Best efficiency: Performance Max → Paid Search → Paid Social → Paid Shopping
-
-
-    Clear action: 
-    Reallocate spend from Paid Shopping into Performance Max and Paid Search while continuing to optimise Paid Social
+    **Best Efficiency:**  
+    Performance Max → Paid Search → Paid Social → Paid Shopping
     
+    **Clear Action:**  
+    - 🔹 Reallocate spend from Paid Shopping into Performance Max and Paid Search  
+    - 🔹 Continue to optimise Paid Social for efficiency
     
-    Budget & optimisation recommendations:
-    Increase investment in high-ROAS channels.
-    Scale Performance Max where possible.
-    Maintain and selectively grow Paid Search (Generic).
+    **Budget & Optimisation Recommendations:**  
+    - ⚡ Increase investment in high-ROAS channels  
+    - ⚡ Scale Performance Max where possible  
+    - ⚡ Maintain and selectively grow Paid Search (Generic)
     
-    Optimise mid-tier channels:
-    Paid Social requires creative, audience or bidding optimisation to improve efficiency.
+    **Optimise Mid-Tier Channels:**  
+    - 🔹 Paid Social requires creative, audience, or bidding optimisation to improve efficiency
     
-    Reduce or reallocate low-ROAS spend:
-    Paid Shopping should be reviewed, optimised, or partially reallocated.
-        """)
+    **Reduce or Reallocate Low-ROAS Spend:**  
+    - ⚠️ Paid Shopping should be reviewed, optimised, or partially reallocated
+    """)
 
 
 # ------------------
