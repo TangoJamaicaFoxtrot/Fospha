@@ -308,35 +308,18 @@ with tab3:
 # ------------------
 import plotly.graph_objects as go
 
+# ------------------
+# TAB 4: UK – Cost & Revenue over time
+# ------------------
+import plotly.graph_objects as go
+
 with tab4:
     st.header("UK Cost & Revenue Over Time")
 
-    # --- Filter ---
-    channels_available = sorted(df["Channel"].unique())
-    selected_channels = st.multiselect(
-        "Select Channel(s)",
-        options=channels_available,
-        default=channels_available,
-        key="uk_channels_filter"
-    )
+    uk_data = df[df["Market"] == "UK"]
 
-    markets_available = sorted(df["Market"].unique())
-    selected_markets = st.multiselect(
-        "Select Market(s)",
-        options=markets_available,
-        default=["UK"],  # keep default UK
-        key="uk_markets_filter"
-    )
-
-    # --- Filtered Data ---
-    filtered_uk = df[
-        df["Market"].isin(selected_markets) &
-        df["Channel"].isin(selected_channels)
-    ]
-
-    # --- Pivot Table ---
     uk_pivot = (
-        filtered_uk
+        uk_data
         .groupby("Month")
         .agg(
             Cost=("Cost", "sum"),
@@ -345,7 +328,6 @@ with tab4:
         .reset_index()
     )
 
-    # Keep months in order
     uk_pivot["Month"] = pd.Categorical(
         uk_pivot["Month"],
         categories=["Jun", "Jul", "Aug", "Sep", "Oct"],
@@ -353,14 +335,12 @@ with tab4:
     )
     uk_pivot = uk_pivot.sort_values("Month")
 
-    # --- Table ---
     st.dataframe(uk_pivot)
 
-    # --- Dual-axis Chart ---
-    fig_uk = go.Figure()
+    fig = go.Figure()
 
     # Cost (left axis)
-    fig_uk.add_trace(
+    fig.add_trace(
         go.Scatter(
             x=uk_pivot["Month"],
             y=uk_pivot["Cost"],
@@ -372,7 +352,7 @@ with tab4:
     )
 
     # Revenue (right axis)
-    fig_uk.add_trace(
+    fig.add_trace(
         go.Scatter(
             x=uk_pivot["Month"],
             y=uk_pivot["Revenue"],
@@ -383,20 +363,20 @@ with tab4:
         )
     )
 
-    fig_uk.update_layout(
+    fig.update_layout(
         title="UK Cost & Revenue Over Time",
         xaxis_title="Month",
-        yaxis=dict(title="Cost (£)"),
+        height=600,
+        yaxis=dict(title="Cost"),
         yaxis2=dict(
-            title="Revenue (£)",
+            title="Revenue",
             overlaying="y",
             side="right"
         ),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
     )
 
-    st.plotly_chart(fig_uk, use_container_width=True)
-
+    st.plotly_chart(fig, use_container_width=True)
 
     st.markdown("---")
     st.subheader("Cost & Revenue Insights")
