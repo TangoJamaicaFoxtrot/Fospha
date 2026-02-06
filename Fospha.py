@@ -11,6 +11,7 @@ logo = Image.open("fospha_logo.png")  # make sure this file is in your project f
 # Display at the top
 st.image(logo, width=200)  # width in pixels
 st.title("Fospha Marketing Performance Dashboard")
+st.subheader("by: Tyler Fox")
 # ------------------
 # Load data
 # ------------------
