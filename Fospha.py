@@ -304,7 +304,8 @@ with tab5:
     selected_months = st.multiselect(
         "Select Month(s)",
         options=all_months,
-        default=all_months
+        default=all_months,
+        key="bonus1_months"
     )
 
     # --------------------
@@ -443,7 +444,8 @@ with tab5:
     selected_channels = st.multiselect(
         "Select Channel(s) for Time Series",
         options=available_channels,
-        default=available_channels  # show all by default
+        default=available_channels,
+        key="bonus1_channels" # show all by default
     )
 
     df_time_filtered = df_paid[df_paid["Channel"].isin(selected_channels)]
@@ -496,7 +498,8 @@ with tab6:
     selected_months = st.multiselect(
         "Select Month(s)",
         options=all_months,
-        default=all_months
+        default=all_months,
+        key="bonus2_months"
     )
 
     # --------------------
@@ -628,7 +631,8 @@ with tab6:
     selected_sources = st.multiselect(
         "Select Source(s) for Time Series",
         options=available_sources,
-        default=available_sources
+        default=available_sources,
+        key="bonus2_sources"
     )
 
     df_time_filtered = df_paid_social[df_paid_social["Source"].isin(selected_sources)]
