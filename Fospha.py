@@ -109,7 +109,9 @@ with tab1:
             "ROAS": "{:.2f}",
             "CAC": "£{:,.2f}",
             "CPP": "£{:,.2f}",
-            "AOV": "£{:,.2f}"
+            "AOV": "£{:,.2f}",
+            "New Conversions": "{:.2f}",
+            "Returning Conversions": "{:.2f}"
         }),
         use_container_width=True
     )
