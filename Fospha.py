@@ -104,7 +104,7 @@ with tab1:
         channel_pivot,
         x="Channel",
         y="ROAS",
-        title="ROAS by Paid Channel"
+        title="Return on Advertising Spend by Paid Channel"
     )
     st.plotly_chart(fig_channel_roas, use_container_width=True)
 
@@ -478,6 +478,175 @@ with tab5:
     )
     fig_time.update_layout(
         title="Paid Channel Cost vs Revenue Over Time",
+        xaxis_title="Month",
+        yaxis=dict(title="Cost (£)"),
+        yaxis2=dict(title="Revenue (£)", overlaying="y", side="right"),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        template="plotly_white"
+    )
+    st.plotly_chart(fig_time, use_container_width=True)
+
+with tab6:
+    st.header("Paid Social Source Deep Dive")
+
+    # --------------------
+    # 1️⃣ Month multi-select filter
+    # --------------------
+    all_months = ["Jun", "Jul", "Aug", "Sep", "Oct"]
+    selected_months = st.multiselect(
+        "Select Month(s)",
+        options=all_months,
+        default=all_months
+    )
+
+    # --------------------
+    # Filter Paid Social data
+    # --------------------
+    df_paid_social = df[
+        (df["Channel"] == "Paid Social") &
+        (df["Month"].isin(selected_months))
+    ]
+
+    # --------------------
+    # 1️⃣ KPI Strip
+    # --------------------
+    total_cost = df_paid_social["Cost"].sum()
+    total_revenue = df_paid_social["Fospha Attribution Revenue"].sum()
+    total_new = df_paid_social["Fospha Attribution New Conversions"].sum()
+    total_total = df_paid_social["Fospha Attribution Conversions"].sum()
+    total_returning = total_total - total_new
+    total_returning = max(total_returning, 0)
+    roas = total_revenue / total_cost if total_cost > 0 else None
+    cac = total_cost / total_new if total_new > 0 else None
+    cpp = total_cost / total_total if total_total > 0 else None
+    aov = total_revenue / total_total if total_total > 0 else None
+    pct_new = total_new / total_total if total_total > 0 else None
+
+    k1, k2, k3, k4, k5, k6 = st.columns(6)
+    k1.metric("Total Cost (£)", f"{total_cost:,.0f}")
+    k2.metric("Total Revenue (£)", f"{total_revenue:,.0f}")
+    k3.metric("ROAS", f"{roas:.2f}")
+    k4.metric("CAC (£)", f"{cac:,.2f}")
+    k5.metric("CPP (£)", f"{cpp:,.2f}")
+    k6.metric("% New Conversions", f"{pct_new:.0%}")
+
+    # --------------------
+    # 2️⃣ Cost vs CAC (secondary axis) — Pinterest last
+    # --------------------
+    source_pivot = (
+        df_paid_social.groupby("Source")
+        .agg(
+            Cost=("Cost", "sum"),
+            New_Conversions=("Fospha Attribution New Conversions", "sum"),
+            Total_Conversions=("Fospha Attribution Conversions", "sum"),
+            Revenue=("Fospha Attribution Revenue", "sum")
+        )
+        .reset_index()
+    )
+    source_pivot["CAC"] = source_pivot["Cost"] / source_pivot["New_Conversions"]
+
+    # Explicit ordering: Pinterest last
+    source_order = [s for s in source_pivot["Source"].unique() if s.lower() != "pinterest"] + ["Pinterest"]
+    source_pivot["Source"] = pd.Categorical(source_pivot["Source"], categories=source_order, ordered=True)
+    source_pivot = source_pivot.sort_values("Source")
+
+    fig_cac = go.Figure()
+    fig_cac.add_trace(go.Bar(
+        x=source_pivot["Source"],
+        y=source_pivot["Cost"],
+        name="Cost",
+        yaxis="y1"
+    ))
+    fig_cac.add_trace(go.Scatter(
+        x=source_pivot["Source"],
+        y=source_pivot["CAC"],
+        name="CAC",
+        yaxis="y2",
+        mode="lines+markers"
+    ))
+    fig_cac.update_layout(
+        title="Paid Social Cost & CAC by Source",
+        xaxis_title="Source",
+        yaxis=dict(title="Cost (£)"),
+        yaxis2=dict(title="CAC (£)", overlaying="y", side="right"),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        template="plotly_white"
+    )
+    st.plotly_chart(fig_cac, use_container_width=True)
+
+    # --------------------
+    # 3️⃣ ROAS & Metrics Table
+    # --------------------
+    source_pivot["CPP"] = source_pivot["Cost"] / source_pivot["Total_Conversions"]
+    source_pivot["AOV"] = source_pivot["Revenue"] / source_pivot["Total_Conversions"]
+    source_pivot["Returning_Conversions"] = source_pivot["Total_Conversions"] - source_pivot["New_Conversions"]
+    source_pivot["ROAS"] = source_pivot["Revenue"] / source_pivot["Cost"]
+
+    st.subheader("Source Metrics Table")
+    st.dataframe(
+        source_pivot[[
+            "Source", "Cost", "Revenue", "ROAS", "CAC", "CPP", "AOV",
+            "New_Conversions", "Returning_Conversions"
+        ]].style.format({
+            "Cost": "£{:,.0f}",
+            "Revenue": "£{:,.0f}",
+            "ROAS": "{:.2f}",
+            "CAC": "£{:,.2f}",
+            "CPP": "£{:,.2f}",
+            "AOV": "£{:,.2f}"
+        }),
+        use_container_width=True
+    )
+
+    # --------------------
+    # 4️⃣ New vs Returning Conversions by Source (stacked bar)
+    # --------------------
+    fig_stack = go.Figure()
+    fig_stack.add_trace(go.Bar(
+        x=source_pivot["Source"],
+        y=source_pivot["New_Conversions"],
+        name="New Conversions"
+    ))
+    fig_stack.add_trace(go.Bar(
+        x=source_pivot["Source"],
+        y=source_pivot["Returning_Conversions"],
+        name="Returning Conversions"
+    ))
+    fig_stack.update_layout(
+        title="New vs Returning Conversions by Paid Social Source",
+        barmode="stack",
+        xaxis_title="Source",
+        yaxis_title="Conversions",
+        template="plotly_white"
+    )
+    st.plotly_chart(fig_stack, use_container_width=True)
+
+    # --------------------
+    # 5️⃣ Optional: Cost vs Revenue over time by source (dual-axis + multi-select)
+    # --------------------
+    available_sources = sorted(df_paid_social["Source"].unique())
+    selected_sources = st.multiselect(
+        "Select Source(s) for Time Series",
+        options=available_sources,
+        default=available_sources
+    )
+
+    df_time_filtered = df_paid_social[df_paid_social["Source"].isin(selected_sources)]
+    time_pivot = (
+        df_time_filtered.groupby("Month")
+        .agg(Cost=("Cost", "sum"), Revenue=("Fospha Attribution Revenue", "sum"))
+        .reset_index()
+    )
+
+    fig_time = go.Figure()
+    fig_time.add_trace(go.Scatter(
+        x=time_pivot["Month"], y=time_pivot["Cost"], mode="lines+markers", name="Cost", yaxis="y1"
+    ))
+    fig_time.add_trace(go.Scatter(
+        x=time_pivot["Month"], y=time_pivot["Revenue"], mode="lines+markers", name="Revenue", yaxis="y2"
+    ))
+    fig_time.update_layout(
+        title="Paid Social Cost vs Revenue Over Time",
         xaxis_title="Month",
         yaxis=dict(title="Cost (£)"),
         yaxis2=dict(title="Revenue (£)", overlaying="y", side="right"),
