@@ -171,6 +171,29 @@ with tab2:
     )
     st.plotly_chart(fig_paid_social_roas, use_container_width=True)
 
+    st.markdown("---")
+    st.subheader("Insights / Commentary")
+    
+    st.markdown("""
+    **Key Observations:**  
+    - Significant decline from Jun (4.36) → Oct (2.29), ~50% drop in efficiency  
+    - Slight uptick in Aug (3.76) didn’t offset the overall downward trend  
+    - Paid Social is becoming less effective month-on-month  
+    
+    **Interpretation:**  
+    - Declining ROAS indicates rising costs or diminishing returns on existing creative/audience strategies  
+    
+    **Recommended Action:**  
+    - ⚡ Full audit of Paid Social campaigns:  
+        - **Creative:** refresh imagery/video, test new messaging  
+        - **Content:** optimise copy, formats, and value proposition  
+        - **Audience:** refine targeting, exclude overlapping segments, test new segments  
+        - **Bidding & Budget Allocation:** adjust bids for highest-performing audiences, consider dayparting or placement optimisation  
+    
+    **Goal:**  
+    - Stabilise and improve ROAS while keeping spend efficient
+    """)
+
 # ------------------
 # TAB 3: Paid Social – CAC & Cost by Source (October)
 # ------------------
@@ -247,6 +270,31 @@ with tab3:
 
     st.plotly_chart(fig, use_container_width=True)
 
+    st.markdown("---")
+    st.subheader("Paid Social Source TL;DR")
+    
+    st.markdown("""
+    **TL;DR:**  
+    - Facebook is currently over-invested relative to its high CAC; shifting budget toward Snapchat and TikTok, while testing Pinterest, should improve efficiency and overall Paid Social ROI  
+    
+    **Key Observations:**  
+    - **Facebook:** dominates spend (~£450k) but has the highest CAC (£53.62) → inefficient spend  
+    - **TikTok:** moderate spend, mid-range CAC (£38.65) → reasonably efficient  
+    - **Snapchat:** low spend, very low CAC (£15.08) → extremely efficient, but untested at scale  
+    - **Pinterest:** no spend yet, CAC undefined → potential opportunity  
+    
+    **Interpretation:**  
+    - Current budget heavily skewed toward high-CAC Facebook  
+    - Snapchat and TikTok are more efficient per £ spent  
+    - Pinterest remains experimental  
+    
+    **Recommended Budget Actions:**  
+    1. **Reduce Facebook spend:** reallocate part of budget to efficient sources, maintain some spend for scale  
+    2. **Increase Snapchat investment:** scale gradually to see if CAC remains low  
+    3. **Maintain / optimise TikTok:** consider minor increases if ROI stays healthy  
+    4. **Experiment with Pinterest:** small test budget, scale only if CAC is acceptable
+    """)
+
 
 # ------------------
 # TAB 4: UK – Cost & Revenue over time
@@ -314,6 +362,21 @@ with tab4:
     )
 
     st.plotly_chart(fig, use_container_width=True)
+
+    st.markdown("---")
+    st.subheader("Cost & Revenue Insights")
+    
+    st.markdown("""
+    **Key Insights:**  
+    - Positive correlation in some months: Jun→Jul and Jul→Aug → investing more led to higher revenue  
+    - Diminishing returns / inefficiency: Sep → higher spend did not guarantee higher revenue → possible saturation, market slowdown, or ineffective campaigns  
+    - Efficiency matters: Aug had best cost-to-revenue ratio → investment was most effective  
+    
+    **Summary:**  
+    - Increasing costs often coincided with higher revenue, especially Jul→Aug and Sep→Oct  
+    - Sep demonstrates that more spend does not automatically drive revenue → efficiency & market factors are crucial  
+    - Best cost efficiency occurred in Aug → targeted investment at the right time maximises revenue gains
+    """)
 
 
 with tab5:
