@@ -360,7 +360,7 @@ with tab4:
     fig.update_layout(
         title="UK Cost & Revenue Over Time",
         xaxis_title="Month",
-        height=500,
+        height=600,
         yaxis=dict(title="Cost"),
         yaxis2=dict(
             title="Revenue",
