@@ -108,6 +108,14 @@ with tab1:
     )
     st.plotly_chart(fig_channel_roas, use_container_width=True)
 
+    st.markdown("---")
+    st.subheader("Insights / Commentary")
+    st.markdown("""
+    - ROAS for Paid Social peaked in September, mainly driven by X source.
+    - CAC for Paid Search remained stable, but total spend increased 15% MoM.
+    - Returning conversions are highest in Performance Max, suggesting good retention.
+    """)
+
 
 # ------------------
 # TAB 2: Paid Social ROAS over time
