@@ -271,11 +271,11 @@ with tab3:
     st.plotly_chart(fig, use_container_width=True)
 
     st.markdown("---")
-    st.subheader("Paid Social Source TL;DR")
+    st.subheader("Paid Social Source Insights")
     
     st.markdown("""
-    **TL;DR:**  
-    - Facebook is currently over-invested relative to its high CAC; shifting budget toward Snapchat and TikTok, while testing Pinterest, should improve efficiency and overall Paid Social ROI  
+    **TL;DR:  
+    - Facebook is currently over-invested relative to its high CAC; shifting budget toward Snapchat and TikTok, while testing Pinterest, should improve efficiency and overall Paid Social ROI**  
     
     **Key Observations:**  
     - **Facebook:** dominates spend (~£450k) but has the highest CAC (£53.62) → inefficient spend  
