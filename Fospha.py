@@ -85,41 +85,41 @@ else:
     else:
         summary["Returning_Conversions"] = 0
 
-# Total conversions (single source of truth)
-summary["Total_Conversions"] = (
-    summary["New_Conversions"] + summary["Returning_Conversions"]
-)
-
-# --- Core efficiency metrics ---
-summary["ROAS"] = summary.apply(
-    lambda x: x["Total_Revenue"] / x["Total_Cost"]
-    if x["Total_Cost"] > 0 else None,
-    axis=1
-)
-
-summary["CAC"] = summary.apply(
-    lambda x: x["Total_Cost"] / x["New_Conversions"]
-    if x["New_Conversions"] > 0 else None,
-    axis=1
-)
-
-summary["CPP"] = summary.apply(
-    lambda x: x["Total_Cost"] / x["Total_Conversions"]
-    if x["Total_Conversions"] > 0 else None,
-    axis=1
-)
-
-summary["AOV"] = summary.apply(
-    lambda x: x["Total_Revenue"] / x["Total_Conversions"]
-    if x["Total_Conversions"] > 0 else None,
-    axis=1
-)
-
-summary["Returning_Conversion_Rate"] = summary.apply(
-    lambda x: x["Returning_Conversions"] / x["Total_Conversions"]
-    if x["Total_Conversions"] > 0 else None,
-    axis=1
-)
+    # Total conversions (single source of truth)
+    summary["Total_Conversions"] = (
+        summary["New_Conversions"] + summary["Returning_Conversions"]
+    )
+    
+    # --- Core efficiency metrics ---
+    summary["ROAS"] = summary.apply(
+        lambda x: x["Total_Revenue"] / x["Total_Cost"]
+        if x["Total_Cost"] > 0 else None,
+        axis=1
+    )
+    
+    summary["CAC"] = summary.apply(
+        lambda x: x["Total_Cost"] / x["New_Conversions"]
+        if x["New_Conversions"] > 0 else None,
+        axis=1
+    )
+    
+    summary["CPP"] = summary.apply(
+        lambda x: x["Total_Cost"] / x["Total_Conversions"]
+        if x["Total_Conversions"] > 0 else None,
+        axis=1
+    )
+    
+    summary["AOV"] = summary.apply(
+        lambda x: x["Total_Revenue"] / x["Total_Conversions"]
+        if x["Total_Conversions"] > 0 else None,
+        axis=1
+    )
+    
+    summary["Returning_Conversion_Rate"] = summary.apply(
+        lambda x: x["Returning_Conversions"] / x["Total_Conversions"]
+        if x["Total_Conversions"] > 0 else None,
+        axis=1
+    )
 
     # KPI Row
     kpi_cols = st.columns(8)
