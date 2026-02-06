@@ -80,8 +80,8 @@ with tab1:
 
     # Core metrics
     channel_pivot["ROAS"] = (channel_pivot["Revenue"] / channel_pivot["Cost"]).round(2)
-    channel_pivot["CAC"] = (channel_pivot["Cost"] / channel_pivot["New_Conversions"].round(2)
-    channel_pivot["CPP"] = (channel_pivot["Cost"] / channel_pivot["Total_Conversions"].round(2)
+    channel_pivot["CAC"] = (channel_pivot["Cost"] / channel_pivot["New_Conversions"]).round(2)
+    channel_pivot["CPP"] = (channel_pivot["Cost"] / channel_pivot["Total_Conversions"]).round(2)
     channel_pivot["AOV"] = (channel_pivot["Revenue"] / channel_pivot["Total_Conversions"]).round(2)
 
     # Right before st.dataframe(...)
