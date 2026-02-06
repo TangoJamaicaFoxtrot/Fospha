@@ -295,4 +295,170 @@ with tab4:
 
 
 with tab5:
-    st.header("Paid Social Deep Dive")
+    st.header("Paid Channel Deep Dive")
+
+    # --------------------
+    # Month filter (multi-select)
+    # --------------------
+    all_months = ["Jun", "Jul", "Aug", "Sep", "Oct"]
+    selected_months = st.multiselect(
+        "Select Month(s)",
+        options=all_months,
+        default=all_months
+    )
+
+    # --------------------
+    # Filtered data
+    # --------------------
+    paid_channels = [
+        "Paid Search - Generic",
+        "Paid Shopping",
+        "Paid Social",
+        "Performance Max"
+    ]
+    df_paid = df[
+        (df["Channel"].isin(paid_channels)) &
+        (df["Month"].isin(selected_months))
+    ]
+
+    # --------------------
+    # 1️⃣ KPI Strip
+    # --------------------
+    total_cost = df_paid["Cost"].sum()
+    total_revenue = df_paid["Fospha Attribution Revenue"].sum()
+    total_new = df_paid["Fospha Attribution New Conversions"].sum()
+    total_total = df_paid["Fospha Attribution Conversions"].sum()
+    total_returning = total_total - total_new
+    total_returning = max(total_returning, 0)
+    roas = total_revenue / total_cost if total_cost > 0 else None
+    cac = total_cost / total_new if total_new > 0 else None
+    cpp = total_cost / total_total if total_total > 0 else None
+    aov = total_revenue / total_total if total_total > 0 else None
+    pct_new = total_new / total_total if total_total > 0 else None
+
+    k1, k2, k3, k4, k5, k6 = st.columns(6)
+    k1.metric("Total Cost (£)", f"{total_cost:,.0f}")
+    k2.metric("Total Revenue (£)", f"{total_revenue:,.0f}")
+    k3.metric("ROAS", f"{roas:.2f}")
+    k4.metric("CAC (£)", f"{cac:,.2f}")
+    k5.metric("CPP (£)", f"{cpp:,.2f}")
+    k6.metric("% New Conversions", f"{pct_new:.0%}")
+
+    # --------------------
+    # 2️⃣ Channel Efficiency Matrix (ROAS vs CAC)
+    # --------------------
+    channel_pivot = (
+        df_paid.groupby("Channel")
+        .agg(
+            Cost=("Cost", "sum"),
+            Revenue=("Fospha Attribution Revenue", "sum"),
+            New_Conversions=("Fospha Attribution New Conversions", "sum"),
+            Total_Conversions=("Fospha Attribution Conversions", "sum")
+        )
+        .reset_index()
+    )
+
+    channel_pivot["CAC"] = channel_pivot["Cost"] / channel_pivot["New_Conversions"]
+    channel_pivot["ROAS"] = channel_pivot["Revenue"] / channel_pivot["Cost"]
+
+    fig_matrix = go.Figure()
+    fig_matrix.add_trace(
+        go.Scatter(
+            x=channel_pivot["CAC"],
+            y=channel_pivot["ROAS"],
+            mode="markers+text",
+            text=channel_pivot["Channel"],
+            textposition="top center",
+            marker=dict(size=channel_pivot["Cost"] / 1000, sizemode="area", sizeref=2),
+            name="Channel"
+        )
+    )
+
+    fig_matrix.update_layout(
+        title="Paid Channel Efficiency (ROAS vs CAC, bubble size = spend)",
+        xaxis_title="CAC (£)",
+        yaxis_title="ROAS",
+        template="plotly_white"
+    )
+
+    st.plotly_chart(fig_matrix, use_container_width=True)
+
+    # --------------------
+    # 3️⃣ New vs Returning Conversions by Channel (stacked bar)
+    # --------------------
+    channel_pivot["Returning_Conversions"] = (
+        channel_pivot["Total_Conversions"] - channel_pivot["New_Conversions"]
+    ).clip(lower=0)
+
+    fig_stack = go.Figure()
+    fig_stack.add_trace(
+        go.Bar(
+            x=channel_pivot["Channel"],
+            y=channel_pivot["New_Conversions"],
+            name="New Conversions"
+        )
+    )
+    fig_stack.add_trace(
+        go.Bar(
+            x=channel_pivot["Channel"],
+            y=channel_pivot["Returning_Conversions"],
+            name="Returning Conversions"
+        )
+    )
+    fig_stack.update_layout(
+        title="New vs Returning Conversions by Paid Channel",
+        barmode="stack",
+        xaxis_title="Channel",
+        yaxis_title="Conversions",
+        template="plotly_white"
+    )
+    st.plotly_chart(fig_stack, use_container_width=True)
+
+    # --------------------
+    # 4️⃣ CAC vs CPP Table
+    # --------------------
+    channel_pivot["CPP"] = channel_pivot["Cost"] / channel_pivot["Total_Conversions"]
+    channel_pivot["AOV"] = channel_pivot["Revenue"] / channel_pivot["Total_Conversions"]
+
+    st.subheader("Paid Channel Metrics Table")
+    st.dataframe(
+        channel_pivot[[
+            "Channel", "Cost", "Revenue", "ROAS", "CAC", "CPP", "AOV",
+            "New_Conversions", "Returning_Conversions"
+        ]].style.format({
+            "Cost": "£{:,.0f}",
+            "Revenue": "£{:,.0f}",
+            "ROAS": "{:.2f}",
+            "CAC": "£{:,.2f}",
+            "CPP": "£{:,.2f}",
+            "AOV": "£{:,.2f}"
+        }),
+        use_container_width=True
+    )
+
+    # --------------------
+    # 5️⃣ Paid Cost vs Revenue Over Time (dual-axis)
+    # --------------------
+    time_pivot = (
+        df_paid.groupby("Month")
+        .agg(Cost=("Cost", "sum"), Revenue=("Fospha Attribution Revenue", "sum"))
+        .reset_index()
+    )
+
+    fig_time = go.Figure()
+    fig_time.add_trace(
+        go.Scatter(x=time_pivot["Month"], y=time_pivot["Cost"], mode="lines+markers", name="Cost", yaxis="y1")
+    )
+    fig_time.add_trace(
+        go.Scatter(x=time_pivot["Month"], y=time_pivot["Revenue"], mode="lines+markers", name="Revenue", yaxis="y2")
+    )
+    fig_time.update_layout(
+        title="Paid Channel Cost vs Revenue Over Time",
+        xaxis_title="Month",
+        yaxis=dict(title="Cost (£)"),
+        yaxis2=dict(title="Revenue (£)", overlaying="y", side="right"),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        template="plotly_white"
+    )
+    st.plotly_chart(fig_time, use_container_width=True)
+
