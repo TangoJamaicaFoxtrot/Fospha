@@ -74,6 +74,9 @@ with tab1:
     summary["CAC"] = summary.apply(lambda x: x["Total_Cost"]/x["New_Conversions"] if x["New_Conversions"]>0 else None, axis=1)
     summary["CPP"] = summary.apply(lambda x: x["Total_Cost"]/(x["New_Conversions"]+x["Returning_Conversions"]) 
                                    if (x["New_Conversions"]+x["Returning_Conversions"])>0 else None, axis=1)
+    summary["AOV"] = summary.apply(lambda x: x["Total_Revenue"] / (x["New_Conversions"] + x["Returning_Conversions"]) 
+                                    if (x["New_Conversions"] + x["Returning_Conversions"]) > 0 else None, axis=1)
+
 
     # KPI Row
     kpi_cols = st.columns(8)
