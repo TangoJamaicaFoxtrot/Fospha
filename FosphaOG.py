@@ -1,0 +1,224 @@
+import streamlit as st
+import pandas as pd
+import plotly.graph_objects as go
+import plotly.express as px
+
+st.set_page_config(page_title="Marketing Performance", layout="wide")
+
+tab1, tab2, tab3, tab4 = st.tabs([
+    "Overview",
+    "Channel Performance",
+    "Paid Social Deep Dive",
+    "Trends & Efficiency"
+])
+
+# ---- Load data ----
+@st.cache_data
+def load_data():
+    df = pd.read_csv(
+        "Fospha Data 2.csv",
+        sep=";",
+        parse_dates=["Date"]
+    )
+    df["Date_Year_Month"] = df["Date"].dt.to_period("M").astype(str)
+    return df
+
+df = load_data()
+
+num_cols = ["Cost", "Fospha Attribution Conversions", "Fospha Attribution Revenue", "Fospha Attribution New Conversions"]
+for col in num_cols:
+    df[col] = pd.to_numeric(df[col], errors="coerce").round(2)
+
+
+# ---- Aggregations ----
+summary = df.groupby("Date_Year_Month").agg(
+    Total_Cost=("Cost", "sum"),
+    Total_Revenue=("Fospha Attribution Revenue", "sum"),
+    Total_New_Conv=("Fospha Attribution New Conversions", "sum")
+).reset_index()
+
+summary["ROAS"] = summary["Total_Revenue"] / summary["Total_Cost"]
+summary["CAC"] = summary["Total_Cost"] / summary["Total_New_Conv"]
+
+# ---- KPI Row ----
+
+with tab1:
+    kpi1, kpi2, kpi3, kpi4 = st.columns(4)
+    
+    kpi1.metric("Total Cost (£)", f"{summary['Total_Cost'].sum():,.0f}")
+    kpi2.metric("Total Revenue (£)", f"{summary['Total_Revenue'].sum():,.0f}")
+    kpi3.metric("ROAS", f"{summary['Total_Revenue'].sum() / summary['Total_Cost'].sum():.2f}")
+    kpi4.metric("CAC (£)", f"{summary['Total_Cost'].sum() / summary['Total_New_Conv'].sum():.2f}")
+
+with tab2:
+    st.subheader("Cost vs Revenue Over Time")
+
+    selected_market = st.selectbox(
+        "Market",
+        sorted(df["Market"].dropna().unique()),
+        index=0
+    )
+
+    filtered = df[df["Market"] == selected_market]
+
+    summary = (
+        filtered
+        .groupby("Date_Year_Month")
+        .agg(
+            Total_Cost=("Cost", "sum"),
+            Total_Revenue=("Fospha Attribution Revenue", "sum"),
+            Total_New_Conv=("Fospha Attribution New Conversions", "sum")
+        )
+        .reset_index()
+    )
+
+    summary["Date_Year_Month"] = pd.to_datetime(summary["Date_Year_Month"])
+    summary = summary.sort_values("Date_Year_Month")
+
+    summary["ROAS"] = summary.apply(
+        lambda x: x["Total_Revenue"] / x["Total_Cost"]
+        if x["Total_Cost"] > 0 else None,
+        axis=1
+    )
+
+    fig = go.Figure()
+
+    fig.add_trace(
+        go.Scatter(
+            x=summary["Date_Year_Month"],
+            y=summary["Total_Cost"],
+            name="Cost",
+            mode="lines+markers",
+            yaxis="y1"
+        )
+    )
+
+    fig.add_trace(
+        go.Scatter(
+            x=summary["Date_Year_Month"],
+            y=summary["Total_Revenue"],
+            name="Revenue",
+            mode="lines+markers",
+            yaxis="y2"
+        )
+    )
+
+    fig.update_layout(
+        title=f"Cost vs Revenue Over Time – {selected_market}",
+        xaxis_title="Month",
+        yaxis=dict(title="Cost (£)"),
+        yaxis2=dict(
+            title="Revenue (£)",
+            overlaying="y",
+            side="right"
+        ),
+        template="plotly_white",
+        legend=dict(orientation="h", y=-0.25)
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
+with tab3:
+    st.subheader("Paid Social Deep Dive")
+
+    paid_social = df[df["Channel"] == "Paid Social"].copy()
+
+    # ---- Filters (defined ONCE) ----
+    col1, col2 = st.columns(2)
+
+    with col1:
+        selected_month = st.selectbox(
+            "Month",
+            sorted(paid_social["Date_Year_Month"].unique()),
+            key="ps_month"
+        )
+
+    with col2:
+        selected_market = st.selectbox(
+            "Market",
+            sorted(paid_social["Market"].unique()),
+            key="ps_market"
+        )
+
+    filtered = paid_social[
+        (paid_social["Date_Year_Month"] == selected_month) &
+        (paid_social["Market"] == selected_market)
+    ]
+
+    # ---- Aggregation ----
+    source_perf = (
+        filtered
+        .groupby("Source")
+        .agg(
+            Cost=("Cost", "sum"),
+            Revenue=("Fospha Attribution Revenue", "sum"),
+            Conversions=("Fospha Attribution Conversions", "sum"),
+            New_Conversions=("Fospha Attribution New Conversions", "sum")
+        )
+        .reset_index()
+    )
+
+    # ---- Metrics ----
+    source_perf["ROAS"] = source_perf.apply(
+        lambda x: x["Revenue"] / x["Cost"] if x["Cost"] > 0 else None,
+        axis=1
+    )
+
+    source_perf["CAC"] = source_perf.apply(
+        lambda x: x["Cost"] / x["New_Conversions"] if x["New_Conversions"] > 0 else None,
+        axis=1
+    )
+
+    # Remove zero-spend rows
+    source_perf = source_perf[source_perf["Cost"] > 0]
+
+    # ---- Charts ----
+    c1, c2 = st.columns(2)
+
+    with c1:
+        fig_cac = px.bar(
+            source_perf.sort_values("CAC"),
+            x="Source",
+            y="CAC",
+            title="CAC by Paid Social Source",
+            template="plotly_white"
+        )
+        st.plotly_chart(fig_cac, use_container_width=True)
+
+    with c2:
+        fig_roas = px.bar(
+            source_perf.sort_values("ROAS", ascending=False),
+            x="Source",
+            y="ROAS",
+            title="ROAS by Paid Social Source",
+            template="plotly_white"
+        )
+        st.plotly_chart(fig_roas, use_container_width=True)
+
+    # ---- Cost vs New Conversions ----
+    fig_scatter = px.scatter(
+        source_perf,
+        x="Cost",
+        y="New_Conversions",
+        size="Revenue",
+        color="Source",
+        title="Cost vs New Conversions (Bubble = Revenue)",
+        template="plotly_white"
+    )
+
+    st.plotly_chart(fig_scatter, use_container_width=True)
+
+    # ---- Table ----
+    st.subheader("Source Performance Summary")
+
+    st.dataframe(
+        source_perf
+        .sort_values("ROAS", ascending=False)
+        .style.format({
+            "Cost": "£{:,.0f}",
+            "Revenue": "£{:,.0f}",
+            "ROAS": "{:.2f}",
+            "CAC": "£{:,.2f}"
+        }),
+        use_container_width=True
+    )
