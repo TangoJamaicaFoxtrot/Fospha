@@ -3,7 +3,14 @@ import pandas as pd
 import plotly.express as px
 
 st.set_page_config(page_title="Fospha – Simplified Dashboard", layout="wide")
+from PIL import Image
 
+# Load logo
+logo = Image.open("fospha_logo.png")  # make sure this file is in your project folder
+
+# Display at the top
+st.image(logo, width=200)  # width in pixels
+st.title("Fospha Marketing Performance Dashboard")
 # ------------------
 # Load data
 # ------------------
