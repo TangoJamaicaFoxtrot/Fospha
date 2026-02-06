@@ -41,28 +41,72 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs([
 # TAB 1: ROAS by Channel
 # ------------------
 with tab1:
-    st.header("ROAS by Channel")
+    st.header("ROAS by Channel (Paid Only)")
+
+    paid_channels = [
+        "Paid Search - Generic",
+        "Paid Shopping",
+        "Paid Social",
+        "Performance Max"
+    ]
+
+    channel_filtered = df[df["Channel"].isin(paid_channels)]
 
     channel_pivot = (
-        df.groupby("Channel")
+        channel_filtered
+        .groupby("Channel")
         .agg(
             Cost=("Cost", "sum"),
-            Revenue=("Fospha Attribution Revenue", "sum")
+            Revenue=("Fospha Attribution Revenue", "sum"),
+            New_Conversions=("Fospha Attribution New Conversions", "sum"),
+            Total_Conversions=("Fospha Attribution Conversions", "sum")
         )
         .reset_index()
     )
 
+    # Returning conversions
+    channel_pivot["Returning_Conversions"] = (
+        channel_pivot["Total_Conversions"] - channel_pivot["New_Conversions"]
+    ).clip(lower=0)
+
+    # Core metrics
     channel_pivot["ROAS"] = channel_pivot["Revenue"] / channel_pivot["Cost"]
+    channel_pivot["CAC"] = channel_pivot["Cost"] / channel_pivot["New_Conversions"]
+    channel_pivot["CPP"] = channel_pivot["Cost"] / channel_pivot["Total_Conversions"]
+    channel_pivot["AOV"] = channel_pivot["Revenue"] / channel_pivot["Total_Conversions"]
 
-    st.dataframe(channel_pivot)
+    # Display table (metrics-heavy)
+    st.dataframe(
+        channel_pivot[[
+            "Channel",
+            "Cost",
+            "Revenue",
+            "ROAS",
+            "CAC",
+            "CPP",
+            "AOV",
+            "New_Conversions",
+            "Returning_Conversions"
+        ]].style.format({
+            "Cost": "£{:,.0f}",
+            "Revenue": "£{:,.0f}",
+            "ROAS": "{:.2f}",
+            "CAC": "£{:,.2f}",
+            "CPP": "£{:,.2f}",
+            "AOV": "£{:,.2f}"
+        }),
+        use_container_width=True
+    )
 
+    # Chart stays simple (ROAS only)
     fig_channel_roas = px.bar(
         channel_pivot,
         x="Channel",
         y="ROAS",
-        title="ROAS by Channel"
+        title="ROAS by Paid Channel"
     )
     st.plotly_chart(fig_channel_roas, use_container_width=True)
+
 
 # ------------------
 # TAB 2: Paid Social ROAS over time
