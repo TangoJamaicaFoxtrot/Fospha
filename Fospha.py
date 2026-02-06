@@ -13,7 +13,9 @@ def load_data():
     df["Date"] = pd.to_datetime(df["Date"])
     df["Month"] = df["Date"].dt.strftime("%b")
     return df
-
+    num_cols = ["Cost", "Fospha Attribution Conversions", "Fospha Attribution Revenue", "Fospha Attribution New Conversions"]
+    for col in num_cols:
+        df[col] = pd.to_numeric(df[col], errors="coerce").round(2)
 df = load_data()
 
 # ------------------
