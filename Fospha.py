@@ -229,6 +229,8 @@ with tab3:
 # ------------------
 # TAB 4: UK – Cost & Revenue over time
 # ------------------
+import plotly.graph_objects as go
+
 with tab4:
     st.header("UK Cost & Revenue Over Time")
 
@@ -253,14 +255,44 @@ with tab4:
 
     st.dataframe(uk_pivot)
 
-    fig_uk = px.line(
-        uk_pivot,
-        x="Month",
-        y=["Cost", "Revenue"],
-        markers=True,
-        title="UK Cost & Revenue Over Time"
+    fig = go.Figure()
+
+    # Cost (left axis)
+    fig.add_trace(
+        go.Scatter(
+            x=uk_pivot["Month"],
+            y=uk_pivot["Cost"],
+            name="Cost",
+            mode="lines+markers",
+            yaxis="y1"
+        )
     )
-    st.plotly_chart(fig_uk, use_container_width=True)
+
+    # Revenue (right axis)
+    fig.add_trace(
+        go.Scatter(
+            x=uk_pivot["Month"],
+            y=uk_pivot["Revenue"],
+            name="Revenue",
+            mode="lines+markers",
+            yaxis="y2"
+        )
+    )
+
+    fig.update_layout(
+        title="UK Cost & Revenue Over Time",
+        xaxis_title="Month",
+        yaxis=dict(title="Cost"),
+        yaxis2=dict(
+            title="Revenue",
+            overlaying="y",
+            side="right"
+        ),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
 
 with tab5:
     st.header("Paid Social Deep Dive")
