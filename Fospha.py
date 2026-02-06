@@ -340,7 +340,8 @@ with tab4:
             y=uk_pivot["Cost"],
             name="Cost",
             mode="lines+markers",
-            yaxis="y1"
+            yaxis="y1",
+            line=dict(color="red")
         )
     )
 
@@ -351,7 +352,8 @@ with tab4:
             y=uk_pivot["Revenue"],
             name="Revenue",
             mode="lines+markers",
-            yaxis="y2"
+            yaxis="y2",
+            line=dict(color="green")
         )
     )
 
