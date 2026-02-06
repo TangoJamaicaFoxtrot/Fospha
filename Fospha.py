@@ -122,15 +122,15 @@ else:
     )
 
     # KPI Row
-    kpi_cols = st.columns(8)
-    kpi_cols[0].metric("Total Cost (£)", f"{summary['Total_Cost'].sum():,.0f}")
-    kpi_cols[1].metric("Total Revenue (£)", f"{summary['Total_Revenue'].sum():,.0f}")
-    kpi_cols[2].metric("ROAS", f"{summary['ROAS'].mean():.2f}" if selected_channel_type=="Paid" else "N/A")
-    kpi_cols[3].metric("CAC (£)", f"{summary['CAC'].mean():.2f}" if selected_channel_type=="Paid" else "N/A")
-    kpi_cols[4].metric("CPP (£)", f"{summary['CPP'].mean():.2f}" if selected_channel_type=="Paid" else "N/A")
-    kpi_cols[5].metric("AOV (£)", f"{summary['AOV'].mean():.2f}" if "AOV" in summary else "N/A")
-    kpi_cols[6].metric("New Conversions", f"{summary['New_Conversions'].sum():,.0f}")
-    kpi_cols[7].metric("Returning Conversions", f"{summary['Returning_Conversions'].sum():,.0f}")
+kpi_cols = st.columns(8)
+kpi_cols[0].metric("Total Cost (£)", f"{summary['Total_Cost'].sum():,.0f}")
+kpi_cols[1].metric("Total Revenue (£)", f"{summary['Total_Revenue'].sum():,.0f}")
+kpi_cols[2].metric("ROAS", f"{summary['ROAS'].mean():.2f}" if selected_channel_type=="Paid" else "N/A")
+kpi_cols[3].metric("CAC (£)", f"{summary['CAC'].mean():.2f}" if selected_channel_type=="Paid" else "N/A")
+kpi_cols[4].metric("CPP (£)", f"{summary['CPP'].mean():.2f}" if selected_channel_type=="Paid" else "N/A")
+kpi_cols[5].metric("AOV (£)", f"{summary['AOV'].mean():.2f}" if "AOV" in summary else "N/A")
+kpi_cols[6].metric("New Conversions", f"{summary['New_Conversions'].sum():,.0f}")
+kpi_cols[7].metric("Returning Conversions", f"{summary['Returning_Conversions'].sum():,.0f}")
 
 # --------------------------
 # TAB 2: Channel Performance
