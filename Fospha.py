@@ -84,9 +84,16 @@ with tab1:
     channel_pivot["CPP"] = channel_pivot["Cost"] / channel_pivot["Total_Conversions"]
     channel_pivot["AOV"] = channel_pivot["Revenue"] / channel_pivot["Total_Conversions"]
 
-    # Display table (metrics-heavy)
+    # Right before st.dataframe(...)
+    display_table = channel_pivot.rename(
+        columns={
+            "New_Conversions": "New Conversions",
+            "Returning_Conversions": "Returning Conversions"
+        }
+    )
+    
     st.dataframe(
-        channel_pivot[[
+        display_table[[
             "Channel",
             "Cost",
             "Revenue",
@@ -94,8 +101,8 @@ with tab1:
             "CAC",
             "CPP",
             "AOV",
-            "New_Conversions",
-            "Returning_Conversions"
+            "New Conversions",
+            "Returning Conversions"
         ]].style.format({
             "Cost": "£{:,.0f}",
             "Revenue": "£{:,.0f}",
@@ -106,6 +113,7 @@ with tab1:
         }),
         use_container_width=True
     )
+
 
     # Chart stays simple (ROAS only)
     fig_channel_roas = px.bar(
