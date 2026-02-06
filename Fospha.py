@@ -115,19 +115,19 @@ with tab1:
     Performance Max → Paid Search → Paid Social → Paid Shopping
     
     **Clear Action:**  
-    - 🔹 Reallocate spend from Paid Shopping into Performance Max and Paid Search  
-    - 🔹 Continue to optimise Paid Social for efficiency
+    - Reallocate spend from Paid Shopping into Performance Max and Paid Search  
+    - Continue to optimise Paid Social for efficiency
     
     **Budget & Optimisation Recommendations:**  
-    - ⚡ Increase investment in high-ROAS channels  
-    - ⚡ Scale Performance Max where possible  
-    - ⚡ Maintain and selectively grow Paid Search (Generic)
+    - Increase investment in high-ROAS channels  
+    - Scale Performance Max where possible  
+    - Maintain and selectively grow Paid Search (Generic)
     
     **Optimise Mid-Tier Channels:**  
-    - 🔹 Paid Social requires creative, audience, or bidding optimisation to improve efficiency
+    - Paid Social requires creative, audience, or bidding optimisation to improve efficiency
     
     **Reduce or Reallocate Low-ROAS Spend:**  
-    - ⚠️ Paid Shopping should be reviewed, optimised, or partially reallocated
+    - Paid Shopping should be reviewed, optimised, or partially reallocated
     """)
 
 
@@ -184,7 +184,7 @@ with tab2:
     - Declining ROAS indicates rising costs or diminishing returns on existing creative/audience strategies  
     
     **Recommended Action:**  
-    - ⚡ Full audit of Paid Social campaigns:  
+    - Full audit of Paid Social campaigns:  
         - **Creative:** refresh imagery/video, test new messaging  
         - **Content:** optimise copy, formats, and value proposition  
         - **Audience:** refine targeting, exclude overlapping segments, test new segments  
@@ -275,7 +275,7 @@ with tab3:
     
     st.markdown("""
     **TL;DR:**  
-    **- Facebook is currently over-invested relative to its high CAC; shifting budget toward Snapchat and TikTok, while testing Pinterest, should improve efficiency and overall Paid Social ROI**  
+    - **Facebook is currently over-invested relative to its high CAC; shifting budget toward Snapchat and TikTok, while testing Pinterest, should improve efficiency and overall Paid Social ROI**  
     
     **Key Observations:**  
     - **Facebook:** dominates spend (~£450k) but has the highest CAC (£53.62) → inefficient spend  
