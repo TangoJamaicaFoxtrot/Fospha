@@ -70,15 +70,54 @@ with tab1:
         AOV=("Average Order Value", "mean")
     ).reset_index()
 
-    summary["ROAS"] = summary.apply(lambda x: x["Total_Revenue"]/x["Total_Cost"] if x["Total_Cost"]>0 else None, axis=1)
-    summary["CAC"] = summary.apply(lambda x: x["Total_Cost"]/x["New_Conversions"] if x["New_Conversions"]>0 else None, axis=1)
-    summary["CPP"] = summary.apply(lambda x: x["Total_Cost"]/(x["New_Conversions"]+x["Returning_Conversions"]) 
-                                   if (x["New_Conversions"]+x["Returning_Conversions"])>0 else None, axis=1)
-    summary["AOV"] = summary.apply(lambda x: x["Total_Revenue"] / (x["New_Conversions"] + x["Returning_Conversions"]) 
-                                    if (x["New_Conversions"] + x["Returning_Conversions"]) > 0 else None, axis=1)
-    summary["Returning_Conversion_Rate"] = summary.apply(
-    lambda x: x["Returning_Conversions"] / (x["New_Conversions"] + x["Returning_Conversions"])
-    if (x["New_Conversions"] + x["Returning_Conversions"]) > 0 else None,
+    # --- Safety first ---
+summary["New_Conversions"] = summary["New_Conversions"].fillna(0)
+
+# If Returning_Conversions exists, use it
+if "Returning_Conversions" in summary.columns:
+    summary["Returning_Conversions"] = summary["Returning_Conversions"].fillna(0)
+else:
+    # Otherwise infer it from total conversions if available
+    if "Total_Conversions" in summary.columns:
+        summary["Returning_Conversions"] = (
+            summary["Total_Conversions"].fillna(0) - summary["New_Conversions"]
+        ).clip(lower=0)
+    else:
+        summary["Returning_Conversions"] = 0
+
+# Total conversions (single source of truth)
+summary["Total_Conversions"] = (
+    summary["New_Conversions"] + summary["Returning_Conversions"]
+)
+
+# --- Core efficiency metrics ---
+summary["ROAS"] = summary.apply(
+    lambda x: x["Total_Revenue"] / x["Total_Cost"]
+    if x["Total_Cost"] > 0 else None,
+    axis=1
+)
+
+summary["CAC"] = summary.apply(
+    lambda x: x["Total_Cost"] / x["New_Conversions"]
+    if x["New_Conversions"] > 0 else None,
+    axis=1
+)
+
+summary["CPP"] = summary.apply(
+    lambda x: x["Total_Cost"] / x["Total_Conversions"]
+    if x["Total_Conversions"] > 0 else None,
+    axis=1
+)
+
+summary["AOV"] = summary.apply(
+    lambda x: x["Total_Revenue"] / x["Total_Conversions"]
+    if x["Total_Conversions"] > 0 else None,
+    axis=1
+)
+
+summary["Returning_Conversion_Rate"] = summary.apply(
+    lambda x: x["Returning_Conversions"] / x["Total_Conversions"]
+    if x["Total_Conversions"] > 0 else None,
     axis=1
 )
 
